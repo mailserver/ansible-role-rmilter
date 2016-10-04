@@ -1,0 +1,15 @@
+---
+
+os:
+  prefix:
+  rundir: /var/run
+
+rmilter_default_config:
+  extended_spam_headers: false
+  rspamd:
+    servers:
+      - r:localhost:11333
+  milter:
+    bind_socket: "unix:{{os.rundir}}/milters/rmilter.sock"
+    owner: "{{ milter_user }}"
+    group: "{{ milter_socket_group }}"

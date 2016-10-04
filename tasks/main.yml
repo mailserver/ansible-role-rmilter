@@ -1,0 +1,29 @@
+---
+
+# Load OS specific configuration variables
+- include_vars: freebsd.yml
+  when: ansible_distribution == 'FreeBSD'
+
+# Combine Configuration, default config uses OS-specific configuration loaded above!
+- set_fact: _rmilter_config="{{ rmilter_default_config | combine(rmilter_config, recursive=True) }}"
+  no_log: true
+
+- name: rmilter installed
+  pkgng: name=rmilter state=present
+
+- name: override configuration installed
+  template:
+    src: rmilter.conf.j2
+    dest: "{{os.prefix}}/etc/rmilter.conf"
+  notify:
+    - restart rmilter
+
+- name: sync rcconf
+  template:
+    src: rc.conf.d/rmilter.j2
+    dest: /etc/rc.conf.d/rmilter
+
+- name: rmilter enabled
+  service: name=rmilter enabled=yes
+  notify:
+    - restart rmilter

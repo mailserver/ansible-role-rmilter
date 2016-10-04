@@ -1,0 +1,108 @@
+
+pidfile = {{os.rundir}}/rmilter/rmilter.pid;
+
+
+# bind_socket - socket credits for local bind:
+# unix:/path/to/file - bind to local socket
+# inet:port@host - bind to inet socket
+# Default: bind_socket = unix:/var/tmp/rmilter.sock;
+
+bind_socket = {{_rmilter_config.milter.bind_socket}};
+
+spamd {
+	# servers - spamd socket definitions in format:
+	# /path/to/file
+	# host[:port]
+	# sockets are separated by ','
+	# is server name is prefixed with r: it is rspamd server
+	# Default: empty
+	servers = {{ _rmilter_config.rspamd.servers | join(',') }};
+
+	# also_check - extra spamd servers to check
+	#also_check = r:clam10.example.com;
+
+	# diff_dir - path where to write messages that have different results from main and extra checks
+	#diff_dir = /var/run/rmilter/diffmsg;
+
+	# connect_timeout - timeout in miliseconds for connecting to spamd
+	# Default: 1s
+	connect_timeout = 1s;
+
+	# results_timeout - timeout in miliseconds for waiting for spamd response
+	# Default: 20s
+	results_timeout = 20s;
+
+	# error_time - time in seconds during which we are counting errors
+	# Default: 10
+	error_time = 10;
+
+	# dead_time - time in seconds during which we are thinking that server is down
+	# Default: 300
+	dead_time = 300;
+
+	# maxerrors - maximum number of errors that can occur during error_time to make us thinking that
+	# this upstream is dead
+	# Default: 10
+	maxerrors = 10;
+
+	# reject_message - reject message for spam
+	# Default: "Spam message rejected; If this is not spam contact abuse team"
+	reject_message = "Spam message rejected; If this is not spam contact abuse at example.com";
+
+	# whitelist - list of ips or nets that should be not checked with spamd
+	# Default: empty
+	whitelist = 127.0.0.1/32, [::1]/128, 192.168.0.0/16;
+
+	# rspamd_metric - metric for using with rspamd
+	# Default: "default"
+	rspamd_metric = "default";
+
+	spamd_soft_fail = yes;
+	spamd_greylist = yes;
+	# For using in the personal email
+	extended_spam_headers = {{"yes" if _rmilter_config.extended_spam_headers else "no"}};
+};
+
+
+
+# tempdir - path to directory that contains temporary files
+# Default: $TMPDIR
+
+tempdir = /tmp;
+
+# max_size - maximum size of scanned mail with clamav and dcc
+# Default: 0 (no limit)
+
+max_size = 10M;
+
+# strict_auth - strict checks for mails from authenticated senders
+# Default: no
+
+strict_auth = no;
+
+# Disable all services except spam filtering
+# TODO: rspamd > 1.9 allows disabling these sections using the `enable = false;` syntax
+# redis {
+# 	# TODO don't know if can be left out
+# 	enable = false;
+# };
+#
+# limits {
+# 	enable = false;
+# };
+# 
+# beanstalk {
+# 	servers = ;
+# };
+# 
+# greylisting {
+# 	enable = false;
+# };
+# 
+# dkim {
+# 	enable = false;
+# };
+# 
+# clamav {
+# 	servers = ;
+# };

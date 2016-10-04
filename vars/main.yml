@@ -1,0 +1,5 @@
+---
+# default vars
+
+milter_user: _rmilter 
+milter_socket_group: milter

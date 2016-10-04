@@ -1,0 +1,8 @@
+---
+
+os:
+  prefix: /usr/local
+  rundir: /var/run 
+
+milter_user: _rmilter 
+milter_socket_group: milter
